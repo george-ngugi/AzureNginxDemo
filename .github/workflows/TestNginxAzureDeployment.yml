@@ -50,10 +50,10 @@ jobs:
       - name: "Update config - multi file"
         shell: bash
         run: |
-          sed -i 's/000000/'"$GITHUB_RUN_ID"'/g' test/configs/multi/nginx.conf
-          cat test/configs/multi/nginx.conf
-          sed -i 's/000000/'"$GITHUB_RUN_ID"'/g' test/configs/multi/conf.d/proxy.conf
-          cat test/configs/multi/conf.d/proxy.conf
+          sed -i 's/000000/'"$GITHUB_RUN_ID"'/g' src/configs/multi/nginx.conf
+          cat src/configs/multi/nginx.conf
+          sed -i 's/000000/'"$GITHUB_RUN_ID"'/g' src/configs/multi/conf.d/proxy.conf
+          cat src/configs/multi/conf.d/proxy.conf
           
       - name: "Sync NGINX configuration and certificate to NGINX for Azure - multi file"
         uses: nginxinc/nginx-for-azure-deploy-action@v0.3.1
