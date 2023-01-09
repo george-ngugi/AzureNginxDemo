@@ -1,0 +1,60 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Test Github action to update NGINX for Azure configurations and certificates
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+env:
+  NGINX_DEPLOYMENT_NAME: github-action-test
+  NGINX_TRANSFORMED_CONFIG_DIR_PATH: /etc/nginx/
+  NGINX_ROOT_CONFIG_FILE: nginx.conf
+  TEST_RESOURCE_GROUP_NAME: george-test
+  NGINX_CERT_NAME: github-action-test-crt
+  NGINX_VAULT_NAME: github-action-test-kv
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  Update-NGINX:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v2
+      - name: "AZ CLI Login"
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: "Sync NGINX certificates"
+        uses: nginxinc/nginx-for-azure-deploy-action@v0.3.0
+        with:
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          resource-group-name: $TEST_RESOURCE_GROUP_NAME
+          nginx-deployment-location: "westcentralus"
+          nginx-deployment-name: $NGINX_DEPLOYMENT_NAME
+          nginx-certificates: '[{"certificateName": "$NGINX_CERT_NAME", "keyvaultSecret": "https://$NGINX_VAULT_NAME.vault.azure.net/secrets/$NGINX_CERT_NAME", "certificateVirtualPath": "/etc/nginx/ssl/$GITHUB_RUN_ID/my-cert.crt", "keyVirtualPath": "/etc/nginx/ssl/$GITHUB_RUN_ID/my-cert.key"  } ]'
+          
+      - name: "Sync NGINX configuration and certificate to NGINX for Azure - multi file"
+        uses: nginxinc/nginx-for-azure-deploy-action@v0.3.0
+        with:
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          resource-group-name: $TEST_RESOURCE_GROUP_NAME
+          nginx-deployment-name: $NGINX_DEPLOYMENT_NAME
+          nginx-deployment-location: "westcentralus"
+          nginx-config-directory-path: src/configs/multi/
+          nginx-root-config-file: $NGINX_ROOT_CONFIG_FILE
+          transformed-nginx-config-directory-path: $NGINX_TRANSFORMED_CONFIG_DIR_PATH
+          nginx-certificates: '[{"certificateName": "$NGINX_CERT_NAME", "keyvaultSecret": "https://$NGINX_VAULT_NAME.vault.azure.net/secrets/$NGINX_CERT_NAME", "certificateVirtualPath": "/etc/nginx/ssl/$GITHUB_RUN_ID/my-cert.crt", "keyVirtualPath": "/etc/nginx/ssl/$GITHUB_RUN_ID/my-cert.key"  } ]'
