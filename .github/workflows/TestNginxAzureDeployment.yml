@@ -15,6 +15,7 @@ on:
 
 env:
   NGINX_DEPLOYMENT_NAME: github-action-test
+  NGINX_DEPLOYMENT_LOCATION: westcentralus
   NGINX_TRANSFORMED_CONFIG_DIR_PATH: /etc/nginx/
   NGINX_ROOT_CONFIG_FILE: nginx.conf
   TEST_RESOURCE_GROUP_NAME: george-test
@@ -43,7 +44,7 @@ jobs:
         with:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           resource-group-name: $TEST_RESOURCE_GROUP_NAME
-          nginx-deployment-location: "westcentralus"
+          nginx-deployment-location: $NGINX_DEPLOYMENT_LOCATION
           nginx-deployment-name: $NGINX_DEPLOYMENT_NAME
           nginx-certificates: '[{"certificateName": "$NGINX_CERT_NAME", "keyvaultSecret": "https://$NGINX_VAULT_NAME.vault.azure.net/secrets/$NGINX_CERT_NAME", "certificateVirtualPath": "/etc/nginx/ssl/$GITHUB_RUN_ID/my-cert.crt", "keyVirtualPath": "/etc/nginx/ssl/$GITHUB_RUN_ID/my-cert.key"  } ]'
           
@@ -61,7 +62,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           resource-group-name: $TEST_RESOURCE_GROUP_NAME
           nginx-deployment-name: $NGINX_DEPLOYMENT_NAME
-          nginx-deployment-location: "westcentralus"
+          nginx-deployment-location: $NGINX_DEPLOYMENT_LOCATION
           nginx-config-directory-path: src/configs/multi/
           nginx-root-config-file: $NGINX_ROOT_CONFIG_FILE
           transformed-nginx-config-directory-path: $NGINX_TRANSFORMED_CONFIG_DIR_PATH
