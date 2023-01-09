@@ -19,7 +19,7 @@ env:
   NGINX_TRANSFORMED_CONFIG_DIR_PATH: /etc/nginx/
   NGINX_ROOT_CONFIG_FILE: nginx.conf
   TEST_RESOURCE_GROUP_NAME: george-test
-  NGINX_CERT_NAME: github-action-test-crt
+  NGINX_CERT_NAME: github-action-test-crt-12213
   NGINX_VAULT_NAME: github-action-test-kv
 
 permissions:
